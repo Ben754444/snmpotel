@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 	"time"
 
@@ -21,6 +22,7 @@ func InitLoggerProvider(ctx context.Context, serviceName string) (func(context.C
 	if endpoint == "" {
 		return nil, fmt.Errorf("OTEL_EXPORTER_OTLP_ENDPOINT not set")
 	}
+	log.Printf("OTEL_EXPORTER_OTLP_ENDPOINT: %s", endpoint)
 
 	// Create OTLP log exporter
 	exporter, err := otlploghttp.New(ctx)
