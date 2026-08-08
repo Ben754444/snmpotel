@@ -14,7 +14,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v7
       - name: Set version
-        run: sed -i "s/CIVERSION/${GITHUB_REF#refs\/tags\/}/" main.go
+        run: sed -i "s/CIVERSION/${{ github.sha }}/" main.go
       - name: Set up Go
         uses: actions/setup-go@v7
         with:
