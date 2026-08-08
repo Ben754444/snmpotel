@@ -20,6 +20,8 @@ import (
 	"go.opentelemetry.io/contrib/bridges/otelslog"
 )
 
+var version = "CIVERSION"
+
 var logger = otelslog.NewLogger("snmpotel")
 var (
 	oidIndex   = make(map[string]gosmi.SmiNode)
@@ -27,6 +29,7 @@ var (
 )
 
 func main() {
+	log.Println("running version", version)
 	listenAddr := flag.String("listen", "0.0.0.0:162", "UDP or TCP address to listen on")
 	flag.Parse()
 
