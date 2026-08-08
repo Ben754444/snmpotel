@@ -30,4 +30,4 @@ jobs:
                   context: .
                   file: ./Dockerfile
                   push: true
-                  tags: ${{ secrets.DOCKER_USERNAME }}/snmpotel:latest
+                  tags: ghcr.io/ben754444/snmpotel:latest
