@@ -37,7 +37,7 @@ func extractHPLogFields(desc string) HPLogFields {
 		date:     date,
 		time:     time,
 		id:       id,
-		module:   text[0],
-		message:  text[1],
+		module:   strings.TrimSpace(text[0]),
+		message:  strings.TrimSpace(text[1]),
 	}
 }

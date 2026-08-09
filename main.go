@@ -136,7 +136,7 @@ func handleTrap(packet *gosnmp.SnmpPacket, addr *net.UDPAddr) {
 			args = append(args, "time", hpVendorSpecific.time)
 			args = append(args, "messageId", hpVendorSpecific.id)
 			args = append(args, "module", hpVendorSpecific.module)
-			logger.Log(context.Background(), hpVendorSpecific.severity, hpVendorSpecific.message)
+			logger.Log(context.Background(), hpVendorSpecific.severity, hpVendorSpecific.message, args...)
 		} else {
 			logger.Info(eventDescription, args...)
 		}
