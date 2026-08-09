@@ -12,6 +12,7 @@ import (
 	"strings"
 	"sync"
 	"time"
+	"unicode"
 	"unicode/utf8"
 
 	"github.com/gosnmp/gosnmp"
@@ -109,7 +110,7 @@ func handleTrap(packet *gosnmp.SnmpPacket, addr *net.UDPAddr) {
 		value := parseValue(variable, node)
 
 		if resolved == "eventDescription" {
-			eventDescription = value
+			eventDescription = cleanDescription(value)
 		}
 
 		logData[resolved] = value
@@ -123,7 +124,23 @@ func handleTrap(packet *gosnmp.SnmpPacket, addr *net.UDPAddr) {
 		args = append(args, key, value)
 	}
 
-	logger.Info(eventDescription, args...)
+	// check if the switch is manufactured by hp
+
+	if eventDescription == "Received SNMP Trap" {
+		logger.Debug(eventDescription, args...)
+	} else {
+		if strings.HasPrefix(packet.Enterprise, ".1.3.6.1.4.1.11.2.3.7.11") { //hpEtherSwitch
+			hpVendorSpecific := extractHPLogFields(eventDescription)
+			args = append(args, "severity", hpVendorSpecific.severity.String())
+			args = append(args, "date", hpVendorSpecific.date)
+			args = append(args, "time", hpVendorSpecific.time)
+			args = append(args, "messageId", hpVendorSpecific.id)
+			args = append(args, "module", hpVendorSpecific.module)
+			logger.Log(context.Background(), hpVendorSpecific.severity, hpVendorSpecific.message)
+		} else {
+			logger.Info(eventDescription, args...)
+		}
+	}
 }
 
 func printJSON(data map[string]interface{}) {
@@ -134,6 +151,22 @@ func printJSON(data map[string]interface{}) {
 	}
 
 	fmt.Println(string(b))
+}
+
+func cleanDescription(desc string) string {
+	new_str := ""
+	for i, char := range desc {
+		if char == '\n' || char == '\r' || !unicode.IsPrint(char) {
+			continue
+		}
+		// remove double spaces
+		if char == ' ' && i+1 < len(desc) && desc[i+1] == ' ' {
+			continue
+		}
+
+		new_str += string(char)
+	}
+	return new_str
 }
 
 func lookupPTR(ip string) string {
