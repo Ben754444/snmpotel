@@ -2,7 +2,6 @@ package main
 
 import (
 	"log/slog"
-	"strconv"
 	"strings"
 )
 
@@ -26,14 +25,14 @@ var severityMap = map[string]slog.Level{
 }
 
 func extractHPLogFields(desc string) HPLogFields {
-	severity := desc[0]
-	date := desc[2:9]
-	time := desc[11:18]
-	id := desc[20:24]
+	severity := desc[0:1]
+	date := desc[2:10]
+	time := desc[11:19]
+	id := desc[20:25]
 	text := strings.Split(desc[25:], ":")
 
 	return HPLogFields{
-		severity: severityMap[strconv.Itoa(int(severity))],
+		severity: severityMap[severity],
 		date:     date,
 		time:     time,
 		id:       id,
