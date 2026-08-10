@@ -29,7 +29,7 @@ func extractHPLogFields(desc string) HPLogFields {
 	date := desc[2:10]
 	time := desc[11:19]
 	id := desc[20:25]
-	text := strings.Split(desc[25:], ":")
+	text := strings.SplitN(desc[25:], ":", 1)
 
 	return HPLogFields{
 		severity: severityMap[severity],

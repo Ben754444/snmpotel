@@ -94,7 +94,11 @@ func handleTrap(packet *gosnmp.SnmpPacket, addr *net.UDPAddr) {
 		"snmp.specific":   packet.SpecificTrap,
 		"snmp.uptime":     packet.Timestamp,
 	}
-	resolvedEnterprise, _, err := resolveTrapOID(packet.Enterprise)
+	resolvedEnterprise := ""
+	var err error
+	if packet.Enterprise != "" {
+		resolvedEnterprise, _, err = resolveTrapOID(packet.Enterprise)
+	}
 	if err == nil {
 		log.Println("resolved enterprise OID:", resolvedEnterprise)
 		logData["snmp.enterprise"] = resolvedEnterprise
@@ -154,7 +158,7 @@ func printJSON(data map[string]interface{}) {
 }
 
 func cleanDescription(desc string) string {
-	new_str := ""
+	newStr := ""
 	for i, char := range desc {
 		if char == '\n' || char == '\r' || !unicode.IsPrint(char) {
 			continue
@@ -164,9 +168,9 @@ func cleanDescription(desc string) string {
 			continue
 		}
 
-		new_str += string(char)
+		newStr += string(char)
 	}
-	return new_str
+	return newStr
 }
 
 func lookupPTR(ip string) string {
