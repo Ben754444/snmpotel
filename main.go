@@ -117,6 +117,15 @@ func handleTrap(packet *gosnmp.SnmpPacket, addr *net.UDPAddr) {
 			eventDescription = cleanDescription(value)
 		}
 
+		if resolved == "snmpTrapOID" { // snmpTrapOid has a value of another OID, we need to resolve that
+			resolvedTrapOID, _, err := resolveTrapOID(value)
+			if err != nil {
+				log.Printf("resolve trap OID %s: %v", value, err)
+			} else {
+				logData["snmpTrap"] = resolvedTrapOID
+			}
+		}
+
 		logData[resolved] = value
 	}
 
